@@ -1,0 +1,57 @@
+#!/bin/bash
+set -e
+
+usage() {
+    echo "usage: $0 push|pull /Volumes/name"
+    echo ""
+    echo "Copy Clover files to or from ./efi/"
+    echo ""
+    echo "Clone your existing EFI directory with $0 pull,"
+    echo "edit the contents, then put it back with $0 push"
+    exit 1
+}
+
+if [ $# != 2 ]; then
+    usage
+fi
+
+self_dirname="${0%/*}"
+if [ ! -d "$self_dirname" ]; then
+    echo "can't find own directory, tried '$self_dirname'"
+    exit 1
+fi
+rsync_filter="$self_dirname/rsync_filter"
+if [ ! -f "$rsync_filter" ]; then
+    echo "could not find $rsync_filter"
+    exit 1
+fi
+
+cmd="$1"
+
+if [ "x$cmd" != "xpush" ] && [ "x$cmd" != "xpull" ]; then
+    usage
+fi
+
+dir="$2"
+
+if [ ! -d "$dir" ]; then
+    echo "Not a directory: $dir"
+    exit 1
+fi
+
+if diskutil info "$dir" >/dev/null 2>&1; then
+    echo "Found volume $dir"
+else
+    echo "Did not find volume in: diskutil info '$dir'"
+fi
+
+# Trim trailing slashes
+dir="${dir%%/}"
+
+# Note that the string "/./" is special to rsync when --relative is used.
+
+if [ "$cmd" == pull ]; then
+    rsync --no-perms --times --delete -v --filter "merge $self_dirname/rsync-filter" --recursive --relative "$dir/EFI/./CLOVER" efi
+else
+    rsync --no-perms --times --delete -v --filter "merge $self_dirname/rsync_filter" --recursive --relative efi/./CLOVER "$dir/EFI/"
+fi
