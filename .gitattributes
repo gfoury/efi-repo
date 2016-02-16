@@ -1,0 +1,3 @@
+efi/** binary
+*.plist -binary
+*.txt -binary
