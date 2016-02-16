@@ -20,8 +20,8 @@ if [ ! -d "$self_dirname" ]; then
     echo "can't find own directory, tried '$self_dirname'"
     exit 1
 fi
-rsync_filter="$self_dirname/rsync_filter"
-if [ ! -f "$rsync_filter" ]; then
+rsync_filter="$self_dirname/rsync-filter"
+if [ ! -r "$rsync_filter" ]; then
     echo "could not find $rsync_filter"
     exit 1
 fi
@@ -53,5 +53,5 @@ dir="${dir%%/}"
 if [ "$cmd" == pull ]; then
     rsync --no-perms --times --delete -v --filter "merge $self_dirname/rsync-filter" --recursive --relative "$dir/EFI/./CLOVER" efi
 else
-    rsync --no-perms --times --delete -v --filter "merge $self_dirname/rsync_filter" --recursive --relative efi/./CLOVER "$dir/EFI/"
+    rsync --no-perms --times --delete -v --filter "merge $self_dirname/rsync-filter" --recursive --relative efi/./CLOVER "$dir/EFI/"
 fi
