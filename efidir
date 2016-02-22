@@ -57,10 +57,10 @@ dir="${dir%%/}"
 
 # Note that the string "/./" is special to rsync when --relative is used.
 if [ "$cmd" == pull ]; then
-    rsync --no-perms --times --delete -v --filter "merge $self_dirname/rsync-filter" --recursive --relative "$dir/EFI/./CLOVER" efi
+    rsync --links --no-perms --times --delete -v --filter "merge $self_dirname/rsync-filter" --recursive --relative "$dir/EFI/./CLOVER" efi
 else
     sanity_check "efi/CLOVER"
     sanity_check "efi/CLOVER/config.plist"
     sanity_check "efi/CLOVER/kexts"
-    rsync --no-perms --times --delete -v --filter "merge $self_dirname/rsync-filter" --recursive --relative efi/./CLOVER "$dir/EFI/"
+    rsync --links --no-perms --times --delete -v --filter "merge $self_dirname/rsync-filter" --recursive --relative efi/./CLOVER "$dir/EFI/"
 fi
